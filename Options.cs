@@ -1,26 +1,56 @@
-using System.CommandLine;
+using System.Runtime.CompilerServices;
+using CommandLineParser.Arguments;
+using Microsoft.VisualBasic;
 
 namespace TLCMM;
 
-public static class Options
+public class Options
 {
-    private static readonly DirectoryInfo _home = new FileInfo(
-        System.Reflection.Assembly.GetEntryAssembly()!.Location
-    ).Directory!;
+    public static readonly Options Parsed = new();
 
-    // Global options
+    [ValueArgument(
+        typeof(Mode),
+        'm',
+        "mode",
+        Description = "The mode for program to run in.",
+        DefaultValue = Mode.Gui
+    )]
+    public Mode Mode;
 
-    public static readonly Option<DirectoryInfo> DirectoryOption =
-        new(new[] { "--directory", "-d" }, () => _home, "Path to Lethal Company directory.");
+    [DirectoryArgument(
+        'd',
+        "directory",
+        Description = "Path to Lethal Company directory.",
+        DirectoryMustExist = true
+    )]
+    public DirectoryInfo Directory = default!;
 
-    public static readonly Option<bool> PauseOption =
-        new(
-            new[] { "--pause", "-p" },
-            () => false,
-            "Wait for the user input before program termination."
-        );
+    [SwitchArgument(
+        'p',
+        "pause",
+        false,
+        Description = "Wait for the user input before program termination."
+    )]
+    public bool Pause;
 
-    // Values for global options
+    public static void ValidateOptions()
+    {
+        Parsed.Directory ??= new FileInfo(
+            System.Reflection.Assembly.GetEntryAssembly()!.Location
+        ).Directory!;
 
-    public static DirectoryInfo Directory { get; set; }
+        var bepInExDirectory = Path.Combine(Parsed.Directory.FullName, "BepInEx");
+
+        if (!System.IO.Directory.Exists(bepInExDirectory))
+            throw new ArgumentException(
+                $"'{Parsed.Directory}' is not a valid Lethal Company directory with BepInEx installed."
+            );
+    }
+}
+
+public enum Mode
+{
+    Print,
+
+    Gui,
 }

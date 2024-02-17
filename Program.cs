@@ -1,19 +1,38 @@
-﻿using System.CommandLine;
-using TLCMM;
+﻿using TLCMM;
 
-var printCommand = new Command("print", "Print current installed mods.");
-printCommand.AddAlias("p");
-printCommand.SetHandler(new PrintHandler().Handle);
+var parser = new CommandLineParser.CommandLineParser();
 
-var guiCommand = new Command("gui", "Launch the program in interactive mode with GUI.");
-guiCommand.AddAlias("g");
-guiCommand.SetHandler(new GuiHandler().Handle);
+parser.ExtractArgumentAttributes(Options.Parsed);
 
-var rootCommand = new RootCommand("TwilightKiddy's Lethal Company Mod Manager");
-rootCommand.AddCommand(printCommand);
-rootCommand.AddCommand(guiCommand);
+try
+{
+    parser.ParseCommandLine(args);
+    if (!parser.ParsingSucceeded)
+        return;
+    Options.ValidateOptions();
+}
+catch (Exception ex)
+{
+    Console.Error.WriteLine("Error: " + ex.Message);
+    parser.ShowUsage();
+    return;
+}
 
-rootCommand.AddGlobalOption(Options.DirectoryOption);
-rootCommand.AddGlobalOption(Options.PauseOption);
+switch (Options.Parsed.Mode)
+{
+    case Mode.Print:
+        PrintHandler.Execute();
+        break;
+    case Mode.Gui:
+        PrintHandler.Execute();
+        break;
+    default:
+        Console.Error.WriteLine($"Error: '{Options.Parsed.Mode}' is not a valid mode.");
+        parser.ShowUsage();
+        return;
+}
 
-rootCommand.Invoke(args);
+if (!Options.Parsed.Pause)
+    return;
+Console.WriteLine("Press any key to continue...");
+Console.ReadKey(true);

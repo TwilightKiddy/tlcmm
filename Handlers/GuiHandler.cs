@@ -8,17 +8,17 @@ using ConsoleGUI.Input;
 
 namespace TLCMM;
 
-public class GuiHandler : HandlerBase
+public static class GuiHandler
 {
-    protected override void Execute(InvocationContext context)
+    public static void Execute()
     {
         ConsoleManager.Setup();
         var list = new ScrollableList<LibraryControl>();
 
-        //for (int i = 0; i < 50; i++)
-        //{
-        //    list.Add(new LibraryControl(new Library("Library", new Version(i, 50 - i), null!)));
-        //}
+        for (int i = 0; i < 50; i++)
+        {
+            list.Add(new LibraryControl(new Library("Library", new Version(i, 50 - i), null!)));
+        }
 
         var outerContainer = new DockPanel()
         {

@@ -13,7 +13,7 @@ public class Library
 
     public (string Name, Version Version)[] Dependencies { get; }
 
-    private Library(string name, Version version, (string, Version)[] dependencies)
+    public Library(string name, Version version, (string, Version)[] dependencies)
     {
         Name = name;
         Version = version;
@@ -80,20 +80,20 @@ public class Library
     {
         var defaultLibraryPaths = Directory
             .EnumerateFiles(
-                Options.Directory.FullName,
+                Options.Parsed.Directory.FullName,
                 "*.dll",
                 new EnumerationOptions() { RecurseSubdirectories = false }
             )
             .Concat(
                 Directory.EnumerateFiles(
-                    Path.Combine(Options.Directory.FullName, "Lethal Company_Data"),
+                    Path.Combine(Options.Parsed.Directory.FullName, "Lethal Company_Data"),
                     "*.dll",
                     new EnumerationOptions() { RecurseSubdirectories = true }
                 )
             )
             .Concat(
                 Directory.EnumerateFiles(
-                    Path.Combine(Options.Directory.FullName, "BepInEx", "core"),
+                    Path.Combine(Options.Parsed.Directory.FullName, "BepInEx", "core"),
                     "*.dll",
                     new EnumerationOptions() { RecurseSubdirectories = true }
                 )

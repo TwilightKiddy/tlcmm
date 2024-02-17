@@ -1,14 +1,13 @@
-using System.CommandLine.Invocation;
 using System.Drawing;
 using Pastel;
 
 namespace TLCMM;
 
-public class PrintHandler : HandlerBase
+public static class PrintHandler
 {
-    protected override void Execute(InvocationContext context)
+    public static void Execute()
     {
-        var homeDirectory = context.ParseResult.GetValueForOption(Options.DirectoryOption)!;
+        var homeDirectory = Options.Parsed.Directory;
 
         var plugins = Directory
             .EnumerateFiles(
