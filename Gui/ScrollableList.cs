@@ -7,7 +7,7 @@ using ConsoleGUI.UserDefined;
 
 namespace TLCMM;
 
-public class ScrollableList<T> : SimpleControl, IList<T>, IInputListener
+public class ScrollableList<T> : SimpleControl, ICollection<T>, IInputListener
     where T : IControl, ISelectable
 {
     public Color SelectedBackground { private get; init; } =
@@ -23,11 +23,7 @@ public class ScrollableList<T> : SimpleControl, IList<T>, IInputListener
 
     public bool IsReadOnly => false;
 
-    public T this[int index]
-    {
-        get => _rows[index];
-        set => throw new NotImplementedException();
-    }
+    public T SelectedItem => _rows[_selectionIndex];
 
     private readonly VerticalScrollPanel _scrollPanel;
 
@@ -109,21 +105,14 @@ public class ScrollableList<T> : SimpleControl, IList<T>, IInputListener
         }
     }
 
-    public int IndexOf(T item) => _rows.IndexOf(item);
-
-    public void Insert(int index, T item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void RemoveAt(int index)
-    {
-        throw new NotImplementedException();
-    }
-
     public void Clear()
     {
-        throw new NotImplementedException();
+        _rows.Clear();
+        var children = _stack.Children.ToArray();
+        foreach (var element in children)
+            _stack.Remove(element);
+
+        _selectionIndex = 0;
     }
 
     public bool Contains(T item) => _rows.Contains(item);
@@ -132,7 +121,19 @@ public class ScrollableList<T> : SimpleControl, IList<T>, IInputListener
 
     public bool Remove(T item)
     {
-        throw new NotImplementedException();
+        if (!_rows.Contains(item))
+            return false;
+
+        if (_rows.IndexOf(item) >= _selectionIndex)
+            if (_selectionIndex >= _rows.Count && _selectionIndex != 0)
+                Select(_selectionIndex - 1);
+            else
+                _selectionIndex -= 1;
+
+        _rows.Remove(item);
+        _stack.Remove(item);
+
+        return true;
     }
 
     public IEnumerator<T> GetEnumerator() => _rows.GetEnumerator();

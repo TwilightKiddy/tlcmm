@@ -1,6 +1,4 @@
-using System.Runtime.CompilerServices;
 using CommandLineParser.Arguments;
-using Microsoft.VisualBasic;
 
 namespace TLCMM;
 
@@ -37,7 +35,7 @@ public class Options
     {
         Parsed.Directory ??= new FileInfo(
             System.Reflection.Assembly.GetEntryAssembly()!.Location
-        ).Directory!;
+        ).Directory!.Parent!;
 
         var bepInExDirectory = Path.Combine(Parsed.Directory.FullName, "BepInEx");
 

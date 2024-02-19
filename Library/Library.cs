@@ -5,43 +5,30 @@ namespace TLCMM;
 
 public class Library
 {
-    private static readonly Lazy<HashSet<string>> DefaultLibraries = new(GetDefaultLibraries);
+    private string _name;
 
-    public string Name { get; }
+    private Version _version;
 
-    public Version Version { get; }
+    private readonly (string Name, Version Version)[] _dependencies;
 
-    public (string Name, Version Version)[] Dependencies { get; }
+    public string Name => _name;
 
-    public Library(string name, Version version, (string, Version)[] dependencies)
+    public Version Version => _version;
+
+    public (string Name, Version Version)[] Dependencies => _dependencies;
+
+    private Library(string name, Version version, (string, Version)[] dependencies)
     {
-        Name = name;
-        Version = version;
-        Dependencies = dependencies;
+        _name = name;
+        _version = version;
+        _dependencies = dependencies;
     }
 
     public Library(FileInfo libraryPath)
     {
         using var stream = libraryPath.Open(FileMode.Open);
         using var peReader = new PEReader(stream);
-
-        var metaReader = peReader.GetMetadataReader();
-
-        var definition = metaReader.GetAssemblyDefinition();
-
-        var dependencies = metaReader
-            .AssemblyReferences.Select<AssemblyReferenceHandle, (string, Version)>(it =>
-            {
-                var dependency = metaReader.GetAssemblyReference(it);
-
-                return (metaReader.GetString(dependency.Name), dependency.Version);
-            })
-            .Where(it => !DefaultLibraries.Value.Contains(it.Item1))
-            .ToArray();
-
-        Name = metaReader.GetString(definition.Name);
-        Version = definition.Version;
-        Dependencies = dependencies;
+        GetMetadata(peReader, out _name, out _version, out _dependencies);
     }
 
     public static bool TryGetLibrary(FileInfo libraryPath, out Library? library)
@@ -54,69 +41,36 @@ public class Library
             return false;
         }
 
+        GetMetadata(peReader, out var name, out var version, out var dependencies);
+
+        library = new Library(name, version, dependencies);
+        return true;
+    }
+
+    private static void GetMetadata(
+        PEReader peReader,
+        out string name,
+        out Version version,
+        out (string, Version)[] dependencies
+    )
+    {
         var metaReader = peReader.GetMetadataReader();
 
         var definition = metaReader.GetAssemblyDefinition();
 
-        var dependencies = metaReader
-            .AssemblyReferences.Select<AssemblyReferenceHandle, (string, Version)>(it =>
-            {
-                var dependency = metaReader.GetAssemblyReference(it);
+        dependencies = metaReader
+            .AssemblyReferences.Select<AssemblyReferenceHandle, (string Name, Version Version)>(
+                it =>
+                {
+                    var dependency = metaReader.GetAssemblyReference(it);
 
-                return (metaReader.GetString(dependency.Name), dependency.Version);
-            })
-            .Where(it => !DefaultLibraries.Value.Contains(it.Item1))
+                    return (metaReader.GetString(dependency.Name), dependency.Version);
+                }
+            )
+            .Where(it => !LibraryOverlord.DefaultLibraries.Contains(it.Name))
             .ToArray();
 
-        library = new Library(
-            metaReader.GetString(definition.Name),
-            definition.Version,
-            dependencies
-        );
-        return true;
-    }
-
-    private static HashSet<string> GetDefaultLibraries()
-    {
-        var defaultLibraryPaths = Directory
-            .EnumerateFiles(
-                Options.Parsed.Directory.FullName,
-                "*.dll",
-                new EnumerationOptions() { RecurseSubdirectories = false }
-            )
-            .Concat(
-                Directory.EnumerateFiles(
-                    Path.Combine(Options.Parsed.Directory.FullName, "Lethal Company_Data"),
-                    "*.dll",
-                    new EnumerationOptions() { RecurseSubdirectories = true }
-                )
-            )
-            .Concat(
-                Directory.EnumerateFiles(
-                    Path.Combine(Options.Parsed.Directory.FullName, "BepInEx", "core"),
-                    "*.dll",
-                    new EnumerationOptions() { RecurseSubdirectories = true }
-                )
-            );
-
-        var defaultLibraries = new HashSet<string>();
-
-        foreach (var path in defaultLibraryPaths)
-        {
-            using var stream = new FileInfo(path).Open(FileMode.Open);
-            using var peReader = new PEReader(stream);
-            if (!peReader.HasMetadata)
-            {
-                continue;
-            }
-
-            var metaReader = peReader.GetMetadataReader();
-
-            var definition = metaReader.GetAssemblyDefinition();
-
-            defaultLibraries.Add(metaReader.GetString(definition.Name));
-        }
-
-        return defaultLibraries;
+        name = metaReader.GetString(definition.Name);
+        version = definition.Version;
     }
 }

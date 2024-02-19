@@ -7,21 +7,12 @@ public static class PrintHandler
 {
     public static void Execute()
     {
-        var homeDirectory = Options.Parsed.Directory;
+        var libraries = LibraryOverlord.GetLibraries();
 
-        var plugins = Directory
-            .EnumerateFiles(
-                Path.Combine(homeDirectory.FullName, "BepInEx", "plugins"),
-                "*.dll",
-                new EnumerationOptions() { RecurseSubdirectories = false }
-            )
-            .Select(it => new Library(new FileInfo(it)))
-            .OrderBy(it => it.Dependencies.Length);
-
-        foreach (var plugin in plugins)
+        foreach (var library in libraries)
         {
-            Console.Write(plugin.Name.Pastel(Color.Green));
-            var dependencies = plugin.Dependencies.Select(it => it.Name);
+            Console.Write(library.Name.Pastel(Color.Green));
+            var dependencies = library.Dependencies.Select(it => it.Name);
             if (dependencies.Any())
                 Console.WriteLine(
                     " " + ("(" + string.Join(", ", dependencies) + ")").Pastel(Color.Gray)

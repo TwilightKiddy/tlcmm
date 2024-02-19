@@ -1,12 +1,15 @@
 using ConsoleGUI.Controls;
 using ConsoleGUI.Data;
 using ConsoleGUI.UserDefined;
+using ConsoleGUI.Space;
 
 namespace TLCMM;
 
-public class LibraryControl : SimpleControl, ISelectable
+public class LibraryControlSimple : SimpleControl, ISelectable
 {
-    public Library Library { get; }
+    public string Name { get; }
+
+    public Version Version { get; }
 
     private readonly Background _background;
 
@@ -18,23 +21,24 @@ public class LibraryControl : SimpleControl, ISelectable
 
     private readonly Boundary _boundary;
 
-    public LibraryControl(Library library)
+    public LibraryControlSimple(string name, Version version)
     {
-        Library = library;
+        Name = name;
+        Version = version;
 
-        _nameTextBlock = new() { Color = Color.White, Text = library.Name + " " };
+        _nameTextBlock = new() { Color = Color.White, Text = name};
 
         _versionTextBlock = new()
         {
             Color = System.Drawing.Color.Gray.Convert(),
-            Text = $"({library.Version})"
+            Text = $"({version})"
         };
 
         _stack = new();
 
         _boundary = new() { MaxHeight = 1, Content = _stack };
 
-        _stack.Add(_nameTextBlock);
+        _stack.Add(new Margin() { Content = _nameTextBlock, Offset = new Offset(0, 0, 1, 0) });
         _stack.Add(_versionTextBlock);
 
         _background = new() { Content = _boundary };

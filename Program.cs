@@ -24,7 +24,7 @@ switch (Options.Parsed.Mode)
         PrintHandler.Execute();
         break;
     case Mode.Gui:
-        PrintHandler.Execute();
+        GuiHandler.Execute();
         break;
     default:
         Console.Error.WriteLine($"Error: '{Options.Parsed.Mode}' is not a valid mode.");
