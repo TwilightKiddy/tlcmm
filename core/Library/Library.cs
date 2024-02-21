@@ -1,13 +1,13 @@
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 
-namespace TLCMM;
+namespace TLCMM.Core;
 
 public class Library
 {
-    private string _name;
+    private readonly string _name;
 
-    private Version _version;
+    private readonly Version _version;
 
     private readonly (string Name, Version Version)[] _dependencies;
 

@@ -4,7 +4,7 @@ using ConsoleGUI.Data;
 using ConsoleGUI.Input;
 using ConsoleGUI.Space;
 
-namespace TLCMM;
+namespace TLCMM.Gui;
 
 public class Tab : IInputListener, ISelectable
 {

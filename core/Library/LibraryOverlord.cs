@@ -1,7 +1,7 @@
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 
-namespace TLCMM;
+namespace TLCMM.Core;
 
 public static class LibraryOverlord
 {

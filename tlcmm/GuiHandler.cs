@@ -1,6 +1,6 @@
 using ConsoleGUI;
 
-namespace TLCMM;
+namespace TLCMM.Gui;
 
 public static class GuiHandler
 {

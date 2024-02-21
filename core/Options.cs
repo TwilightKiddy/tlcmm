@@ -1,19 +1,10 @@
 using CommandLineParser.Arguments;
 
-namespace TLCMM;
+namespace TLCMM.Core;
 
 public class Options
 {
     public static readonly Options Parsed = new();
-
-    [ValueArgument(
-        typeof(Mode),
-        'm',
-        "mode",
-        Description = "The mode for program to run in.",
-        DefaultValue = Mode.Gui
-    )]
-    public Mode Mode;
 
     [DirectoryArgument(
         'd',
@@ -33,9 +24,9 @@ public class Options
 
     public static void ValidateOptions()
     {
-        Parsed.Directory ??= new FileInfo(
-            System.Reflection.Assembly.GetEntryAssembly()!.Location
-        ).Directory!.Parent!;
+        Parsed.Directory ??= new FileInfo(System.Reflection.Assembly.GetEntryAssembly()!.Location)
+            .Directory!
+            .Parent!;
 
         var bepInExDirectory = Path.Combine(Parsed.Directory.FullName, "BepInEx");
 
@@ -44,11 +35,4 @@ public class Options
                 $"'{Parsed.Directory}' is not a valid Lethal Company directory with BepInEx installed."
             );
     }
-}
-
-public enum Mode
-{
-    Print,
-
-    Gui,
 }

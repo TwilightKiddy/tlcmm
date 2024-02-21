@@ -5,7 +5,7 @@ using ConsoleGUI.Data;
 using ConsoleGUI.Input;
 using ConsoleGUI.UserDefined;
 
-namespace TLCMM;
+namespace TLCMM.Gui;
 
 public class ScrollableList<T> : SimpleControl, ICollection<T>, IInputListener
     where T : IControl, ISelectable
@@ -75,34 +75,31 @@ public class ScrollableList<T> : SimpleControl, ICollection<T>, IInputListener
 
     public void OnInput(InputEvent inputEvent)
     {
-        if (inputEvent.Key.Key == ConsoleKey.UpArrow)
+        switch (inputEvent.Key.Key)
         {
-            if (_selectionIndex <= 0)
-            {
-                inputEvent.Handled = true;
+            case ConsoleKey.UpArrow:
+                if (_selectionIndex <= 0) 
+                    break;
+
+                if (_selectionIndex <= _scrollPanel.Top)
+                    _scrollPanel.Top -= 1;
+
+                Select(_selectionIndex - 1);
+                break;
+            case ConsoleKey.DownArrow:
+                if (_selectionIndex >= _rows.Count - 1)
+                    break;
+
+                if (_selectionIndex >= _scrollPanel.Top + _scrollPanel.Size.Height - 1)
+                    _scrollPanel.Top += 1;
+
+                Select(_selectionIndex + 1);
+                break;
+            default:
                 return;
-            }
-
-            if (_selectionIndex <= _scrollPanel.Top)
-                _scrollPanel.Top -= 1;
-
-            Select(_selectionIndex - 1);
-            inputEvent.Handled = true;
         }
-        if (inputEvent.Key.Key == ConsoleKey.DownArrow)
-        {
-            if (_selectionIndex >= _rows.Count - 1)
-            {
-                inputEvent.Handled = true;
-                return;
-            }
 
-            if (_selectionIndex >= _scrollPanel.Top + _scrollPanel.Size.Height - 1)
-                _scrollPanel.Top += 1;
-
-            Select(_selectionIndex + 1);
-            inputEvent.Handled = true;
-        }
+        inputEvent.Handled = true;
     }
 
     public void Clear()

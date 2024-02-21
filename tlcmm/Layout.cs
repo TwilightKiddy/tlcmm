@@ -2,8 +2,9 @@ using System.Drawing;
 using ConsoleGUI.Common;
 using ConsoleGUI.Controls;
 using ConsoleGUI.Input;
+using TLCMM.Core;
 
-namespace TLCMM;
+namespace TLCMM.Gui;
 
 public static class Layout
 {

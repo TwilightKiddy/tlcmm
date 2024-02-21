@@ -1,9 +1,9 @@
 using ConsoleGUI.Controls;
 using ConsoleGUI.Data;
-using ConsoleGUI.UserDefined;
 using ConsoleGUI.Space;
+using ConsoleGUI.UserDefined;
 
-namespace TLCMM;
+namespace TLCMM.Gui;
 
 public class LibraryControlSimple : SimpleControl, ISelectable
 {
@@ -26,7 +26,7 @@ public class LibraryControlSimple : SimpleControl, ISelectable
         Name = name;
         Version = version;
 
-        _nameTextBlock = new() { Color = Color.White, Text = name};
+        _nameTextBlock = new() { Color = Color.White, Text = name };
 
         _versionTextBlock = new()
         {

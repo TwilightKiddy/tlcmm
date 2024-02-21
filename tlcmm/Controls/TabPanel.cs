@@ -1,11 +1,9 @@
-using ConsoleGUI;
 using ConsoleGUI.Controls;
 using ConsoleGUI.Data;
 using ConsoleGUI.Input;
-using ConsoleGUI.Space;
 using ConsoleGUI.UserDefined;
 
-namespace TLCMM;
+namespace TLCMM.Gui;
 
 public class TabPanel : SimpleControl, IInputListener
 {
@@ -13,7 +11,7 @@ public class TabPanel : SimpleControl, IInputListener
     private readonly DockPanel _wrapper;
     private readonly HorizontalStackPanel _tabsPanel;
 
-    private Tab currentTab;
+    private Tab? currentTab;
 
     public TabPanel()
     {
@@ -55,21 +53,24 @@ public class TabPanel : SimpleControl, IInputListener
 
     public void OnInput(InputEvent inputEvent)
     {
+        if (currentTab == null)
+            return;
+
         switch (inputEvent.Key.Key)
         {
             case ConsoleKey.Tab when (inputEvent.Key.Modifiers & ConsoleModifiers.Shift) != 0:
             case ConsoleKey.LeftArrow:
                 SelectTab((_tabs.Count + _tabs.IndexOf(currentTab) - 1) % _tabs.Count);
-                inputEvent.Handled = true;
-                return;
+                break;
             case ConsoleKey.Tab:
             case ConsoleKey.RightArrow:
                 SelectTab((_tabs.IndexOf(currentTab) + 1) % _tabs.Count);
-                inputEvent.Handled = true;
-                return;
+                break;
             default:
                 currentTab.OnInput(inputEvent);
                 return;
         }
+
+        inputEvent.Handled = true;
     }
 }
