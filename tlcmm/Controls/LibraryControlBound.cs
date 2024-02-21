@@ -1,8 +1,10 @@
-using TLCMM.Core;
+using Tlcmm.Core;
 
-namespace TLCMM.Gui;
+namespace Tlcmm.Gui;
 
-public class LibraryControlBound(Library library) : LibraryControlSimple(library.Name, library.Version), ISelectable
+public class LibraryControlBound(Library library)
+    : LibraryControlSimple(library.Name, library.Version),
+        ISelectable
 {
     public Library Library { get; } = library;
 }

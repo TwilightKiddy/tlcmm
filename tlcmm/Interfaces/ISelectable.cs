@@ -1,4 +1,4 @@
-namespace TLCMM.Gui;
+namespace Tlcmm.Gui;
 
 public interface ISelectable
 {

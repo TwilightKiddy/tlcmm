@@ -5,7 +5,7 @@ using ConsoleGUI.Data;
 using ConsoleGUI.Input;
 using ConsoleGUI.UserDefined;
 
-namespace TLCMM.Gui;
+namespace Tlcmm.Gui;
 
 public class ScrollableList<T> : SimpleControl, ICollection<T>, IInputListener
     where T : IControl, ISelectable
@@ -78,7 +78,7 @@ public class ScrollableList<T> : SimpleControl, ICollection<T>, IInputListener
         switch (inputEvent.Key.Key)
         {
             case ConsoleKey.UpArrow:
-                if (_selectionIndex <= 0) 
+                if (_selectionIndex <= 0)
                     break;
 
                 if (_selectionIndex <= _scrollPanel.Top)

@@ -1,6 +1,6 @@
 using CommandLineParser.Arguments;
 
-namespace TLCMM.Core;
+namespace Tlcmm.Core;
 
 public class Options
 {

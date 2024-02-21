@@ -1,6 +1,6 @@
 ﻿using ConsoleGUI;
-using TLCMM.Core;
-using TLCMM.Gui;
+using Tlcmm.Core;
+using Tlcmm.Gui;
 
 Execution.StartUp(args);
 

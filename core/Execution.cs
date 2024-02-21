@@ -1,4 +1,4 @@
-﻿namespace TLCMM.Core;
+﻿namespace Tlcmm.Core;
 
 public static class Execution
 {

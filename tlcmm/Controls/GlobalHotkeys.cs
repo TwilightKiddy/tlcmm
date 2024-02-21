@@ -1,5 +1,7 @@
 using ConsoleGUI.Input;
 
+namespace Tlcmm.Gui;
+
 public class GlobalHotkeys : IInputListener
 {
     public bool TerminationRequested { get; private set; }

@@ -3,7 +3,7 @@ using ConsoleGUI.Data;
 using ConsoleGUI.Space;
 using ConsoleGUI.UserDefined;
 
-namespace TLCMM.Gui;
+namespace Tlcmm.Gui;
 
 public class LibraryControlSimple : SimpleControl, ISelectable
 {

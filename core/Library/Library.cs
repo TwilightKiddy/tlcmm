@@ -1,7 +1,7 @@
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 
-namespace TLCMM.Core;
+namespace Tlcmm.Core;
 
 public class Library
 {

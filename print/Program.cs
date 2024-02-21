@@ -1,6 +1,6 @@
 using System.Drawing;
 using Pastel;
-using TLCMM.Core;
+using Tlcmm.Core;
 
 Execution.StartUp(args);
 
@@ -11,9 +11,7 @@ foreach (var library in libraries)
     Console.Write(library.Name.Pastel(Color.Green));
     var dependencies = library.Dependencies.Select(it => it.Name);
     if (dependencies.Any())
-        Console.WriteLine(
-            " " + ("(" + string.Join(", ", dependencies) + ")").Pastel(Color.Gray)
-        );
+        Console.WriteLine(" " + ("(" + string.Join(", ", dependencies) + ")").Pastel(Color.Gray));
     else
         Console.WriteLine();
 }

@@ -3,7 +3,7 @@ using ConsoleGUI.Data;
 using ConsoleGUI.Input;
 using ConsoleGUI.UserDefined;
 
-namespace TLCMM.Gui;
+namespace Tlcmm.Gui;
 
 public class TabPanel : SimpleControl, IInputListener
 {

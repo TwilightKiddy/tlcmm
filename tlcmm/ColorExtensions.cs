@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TLCMM.Gui;
+namespace Tlcmm.Gui;
 
 public static class ColorExtensions
 {
