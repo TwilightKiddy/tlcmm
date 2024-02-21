@@ -11,6 +11,10 @@ public class LibraryControlSimple : SimpleControl, ISelectable
 
     public Version Version { get; }
 
+    public Color EnabledColor = Color.White;
+
+    public Color DisabledColor = System.Drawing.Color.Gray.Convert();
+
     private readonly Background _background;
 
     private readonly HorizontalStackPanel _stack;
@@ -21,12 +25,12 @@ public class LibraryControlSimple : SimpleControl, ISelectable
 
     private readonly Boundary _boundary;
 
-    public LibraryControlSimple(string name, Version version)
+    public LibraryControlSimple(string name, Version version, bool enabled)
     {
         Name = name;
         Version = version;
 
-        _nameTextBlock = new() { Color = Color.White, Text = name };
+        _nameTextBlock = new() { Color = enabled ? EnabledColor : DisabledColor, Text = name };
 
         _versionTextBlock = new()
         {
@@ -56,5 +60,15 @@ public class LibraryControlSimple : SimpleControl, ISelectable
         {
             _background.Color = Color.Black;
         }
+    }
+
+    public void Disable()
+    {
+        _nameTextBlock.Color = DisabledColor;
+    }
+
+    public void Enable()
+    {
+        _nameTextBlock.Color = EnabledColor;
     }
 }

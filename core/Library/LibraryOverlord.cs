@@ -7,17 +7,42 @@ public static class LibraryOverlord
 {
     private static readonly Lazy<HashSet<string>> DefaultLibrariesLazy = new(GetDefaultLibraries);
 
+    private static readonly Lazy<DirectoryInfo> ModsDirectoryLazy = new(GetModsDirectory);
+
+    public static DirectoryInfo ModsDirectory => ModsDirectoryLazy.Value;
+
+    private static readonly Lazy<DirectoryInfo> StashDirectoryLazy = new(GetStashDirectory);
+
+    public static DirectoryInfo StashDirectory => StashDirectoryLazy.Value;
+
     public static HashSet<string> DefaultLibraries => DefaultLibrariesLazy.Value;
 
     public static IOrderedEnumerable<Library> GetLibraries()
     {
-        return Directory
+        return ModsDirectory
             .EnumerateFiles(
-                Path.Combine(Options.Parsed.Directory.FullName, "BepInEx", "plugins"),
                 "*.dll",
-                new EnumerationOptions() { RecurseSubdirectories = false }
+                new EnumerationOptions()
+                {
+                    RecurseSubdirectories = false,
+                    AttributesToSkip =
+                        FileAttributes.Hidden | FileAttributes.System | FileAttributes.ReparsePoint
+                }
             )
-            .Select(it => new Library(new FileInfo(it)))
+            .Concat(
+                StashDirectory.EnumerateFiles(
+                    "*.dll",
+                    new EnumerationOptions()
+                    {
+                        RecurseSubdirectories = false,
+                        AttributesToSkip =
+                            FileAttributes.Hidden
+                            | FileAttributes.System
+                            | FileAttributes.ReparsePoint
+                    }
+                )
+            )
+            .Select(it => new Library(it))
             .OrderBy(it => it.Dependencies.Length);
     }
 
@@ -56,5 +81,28 @@ public static class LibraryOverlord
         }
 
         return defaultLibraries;
+    }
+
+    private static DirectoryInfo GetModsDirectory()
+    {
+        var directory = new DirectoryInfo(
+            Path.Combine(Options.Parsed.Directory.FullName, "BepInEx", "plugins")
+        );
+        if (!directory.Exists)
+            directory.Create();
+
+        return directory;
+    }
+
+    private static DirectoryInfo GetStashDirectory()
+    {
+        var directory = new DirectoryInfo(
+            Path.Combine(Options.Parsed.Directory.FullName, "BepInEx", "tlcmm_stash")
+        );
+
+        if (!directory.Exists)
+            directory.Create();
+
+        return directory;
     }
 }

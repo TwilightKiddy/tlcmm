@@ -11,17 +11,57 @@ public class Library
 
     private readonly (string Name, Version Version)[] _dependencies;
 
+    private readonly FileInfo EnabledFile;
+
+    private readonly FileInfo StashedFile;
+
     public string Name => _name;
 
     public Version Version => _version;
 
     public (string Name, Version Version)[] Dependencies => _dependencies;
 
-    private Library(string name, Version version, (string, Version)[] dependencies)
+    public string FileName { get; }
+
+    public bool Enabled
+    {
+        get
+        {
+            EnabledFile.Refresh();
+            return EnabledFile.Exists;
+        }
+        set
+        {
+            if (value == Enabled)
+                return;
+            if (value)
+                EnabledFile.CreateAsSymbolicLink(
+                    Path.Combine(LibraryOverlord.StashDirectory.FullName, FileName)
+                );
+            else
+            {
+                if (EnabledFile.LinkTarget != null)
+                {
+                    EnabledFile.Delete();
+                    return;
+                }
+
+                File.Move(
+                    EnabledFile.FullName,
+                    Path.Combine(LibraryOverlord.StashDirectory.FullName, FileName)
+                );
+            }
+        }
+    }
+
+    private Library(string name, Version version, (string, Version)[] dependencies, string fileName)
     {
         _name = name;
         _version = version;
         _dependencies = dependencies;
+        FileName = fileName;
+        EnabledFile = new FileInfo(Path.Combine(LibraryOverlord.ModsDirectory.FullName, FileName));
+        StashedFile = new FileInfo(Path.Combine(LibraryOverlord.StashDirectory.FullName, FileName));
     }
 
     public Library(FileInfo libraryPath)
@@ -29,6 +69,9 @@ public class Library
         using var stream = libraryPath.Open(FileMode.Open);
         using var peReader = new PEReader(stream);
         GetMetadata(peReader, out _name, out _version, out _dependencies);
+        FileName = libraryPath.Name;
+        EnabledFile = new FileInfo(Path.Combine(LibraryOverlord.ModsDirectory.FullName, FileName));
+        StashedFile = new FileInfo(Path.Combine(LibraryOverlord.StashDirectory.FullName, FileName));
     }
 
     public static bool TryGetLibrary(FileInfo libraryPath, out Library? library)
@@ -43,7 +86,7 @@ public class Library
 
         GetMetadata(peReader, out var name, out var version, out var dependencies);
 
-        library = new Library(name, version, dependencies);
+        library = new Library(name, version, dependencies, libraryPath.Name);
         return true;
     }
 

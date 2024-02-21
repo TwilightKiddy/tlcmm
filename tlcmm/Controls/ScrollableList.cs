@@ -25,6 +25,8 @@ public class ScrollableList<T> : SimpleControl, ICollection<T>, IInputListener
 
     public T SelectedItem => _rows[_selectionIndex];
 
+    public event Action<T> OnExecute = default!;
+
     private readonly VerticalScrollPanel _scrollPanel;
 
     private readonly List<T> _rows;
@@ -94,6 +96,11 @@ public class ScrollableList<T> : SimpleControl, ICollection<T>, IInputListener
                     _scrollPanel.Top += 1;
 
                 Select(_selectionIndex + 1);
+                break;
+            case ConsoleKey.Spacebar:
+            case ConsoleKey.Enter:
+                if (_rows.Count > 0)
+                    OnExecute?.Invoke(_rows[_selectionIndex]);
                 break;
             default:
                 return;

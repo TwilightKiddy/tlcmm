@@ -8,13 +8,25 @@ namespace Tlcmm.Gui;
 
 public static class Layout
 {
-    public static IReadOnlyCollection<IInputListener> InputListeners => _inputListeners;
-
-    private static readonly List<IInputListener> _inputListeners = new();
+    public static readonly List<IInputListener> InputListeners = [];
 
     public static Control Build()
     {
         var modsList = new ScrollableList<LibraryControlBound>();
+
+        modsList.OnExecute += libraryControl =>
+        {
+            if (libraryControl.Library.Enabled)
+            {
+                libraryControl.Library.Enabled = false;
+                libraryControl.Disable();
+            }
+            else
+            {
+                libraryControl.Library.Enabled = true;
+                libraryControl.Enable();
+            }
+        };
 
         foreach (var library in LibraryOverlord.GetLibraries())
         {
@@ -43,7 +55,9 @@ public static class Layout
             dependenciesHeader.Text = $"Dependencies for {modsList.SelectedItem.Library.Name}:";
             foreach (var dependency in modsList.SelectedItem.Library.Dependencies)
             {
-                dependenciesList.Add(new LibraryControlSimple(dependency.Name, dependency.Version));
+                dependenciesList.Add(
+                    new LibraryControlSimple(dependency.Name, dependency.Version, true)
+                );
             }
         };
         tabPanel.AddTab(dependenciesTab);
@@ -62,7 +76,7 @@ public static class Layout
             }
         };
 
-        _inputListeners.Add(tabPanel);
+        InputListeners.Add(tabPanel);
 
         return outerContainer;
     }
