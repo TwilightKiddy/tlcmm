@@ -7,9 +7,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <BeautyLibsDir>./lib</BeautyLibsDir>
+    <DisableBeauty>False</DisableBeauty>
+    <BeautyOnPublishOnly>False</BeautyOnPublishOnly>
+    <BeautyNoRuntimeInfo>False</BeautyNoRuntimeInfo>
+    <BeautyEnableDebugging>False</BeautyEnableDebugging>
+    <BeautyUsePatch>True</BeautyUsePatch>
+    <BeautyLogLevel>Error</BeautyLogLevel>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CommandLineArgumentsParser" Version="3.0.23" />
     <PackageReference Include="ConsoleGUI" Version="1.4.2" />
+    <PackageReference Include="nulastudio.NetBeauty" Version="2.1.4.4" />
     <PackageReference Include="Pastel" Version="5.0.0" />
   </ItemGroup>
 
