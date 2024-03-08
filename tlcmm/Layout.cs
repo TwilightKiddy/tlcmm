@@ -14,19 +14,7 @@ public static class Layout
     {
         var modsList = new ScrollableList<LibraryControlBound>();
 
-        modsList.OnExecute += libraryControl =>
-        {
-            if (libraryControl.Library.Enabled)
-            {
-                libraryControl.Library.Enabled = false;
-                libraryControl.Disable();
-            }
-            else
-            {
-                libraryControl.Library.Enabled = true;
-                libraryControl.Enable();
-            }
-        };
+        modsList.OnExecute += libraryControl => ToggleLibrary(modsList, libraryControl);
 
         foreach (var library in LibraryOverlord.GetLibraries())
         {
@@ -79,5 +67,51 @@ public static class Layout
         InputListeners.Add(tabPanel);
 
         return outerContainer;
+    }
+
+    private static void ToggleLibrary(ScrollableList<LibraryControlBound> libraryList, LibraryControlBound libraryControl)
+    {
+        if (libraryControl.Library.Enabled)
+            DisableLibrary(libraryControl);
+        else
+            EnableLibrary(libraryControl);
+
+        /// Local functions
+
+        void DisableLibrary(LibraryControlBound library)
+        {
+            library.Library.Enabled = false;
+            library.Disable();
+
+            foreach (var lib in GetDependants(library))
+                DisableLibrary(lib);
+
+            foreach (var lib in GetDependencies(library).Where(it => it.Library.Enabled))
+                if (!GetDependants(lib).Any())
+                    DisableLibrary(lib);
+        }
+
+        void EnableLibrary(LibraryControlBound library)
+        {
+            library.Library.Enabled = true;
+            library.Enable();
+
+            foreach (var lib in GetDependencies(library))
+                EnableLibrary(lib);
+        }
+
+        IEnumerable<LibraryControlBound> GetDependencies(LibraryControlBound library)
+        {
+            foreach (var lib in libraryList)
+                if (library.Library.Dependencies.Any(it => it.Name == lib.Library.Name))
+                    yield return lib;
+        }
+
+        IEnumerable<LibraryControlBound> GetDependants(LibraryControlBound library)
+        {
+            foreach (var lib in libraryList)
+                if (lib.Library.Dependencies.Any(it => it.Name == library.Library.Name) && lib.Library.Enabled)
+                    yield return lib;
+        }
     }
 }
